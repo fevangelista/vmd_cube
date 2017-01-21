@@ -193,11 +193,11 @@ def read_options(options):
     parser.add_argument('--rz', metavar='<angle>', type=float, nargs='?',default=15.0,
                    help='the z-axis rotation angle (float, default = 15.0)')
                    
-    parser.add_argument('--tx', metavar='<angle>', type=float, nargs='?',default=0.0,
+    parser.add_argument('--tx', metavar='<length>', type=float, nargs='?',default=0.0,
                    help='the x-axis translation (float, default = 0.0)')
-    parser.add_argument('--ty', metavar='<angle>', type=float, nargs='?',default=0.0,
+    parser.add_argument('--ty', metavar='<length>', type=float, nargs='?',default=0.0,
                    help='the y-axis translation (float, default = 0.0)')
-    parser.add_argument('--tz', metavar='<angle>', type=float, nargs='?',default=0.0,
+    parser.add_argument('--tz', metavar='<length>', type=float, nargs='?',default=0.0,
                    help='the z-axis translation (float, default = 0.0)')
 
     parser.add_argument('--opacity', metavar='<opacity>', type=float, nargs='?',default=1.0,
@@ -205,9 +205,9 @@ def read_options(options):
 
     parser.add_argument('--scale', metavar='<factor>', type=float, nargs='?',default=1.0,
                    help='the scaling factor (float, default = 1.0)')
-    parser.add_argument('--montage', const=True, default=True, nargs='?',
+    parser.add_argument('--no-montage', metavar='', const=True, default=False, nargs='?',
                    help='call montage to combine images. (string, default = false)')
-    parser.add_argument('--no-labels', const=True, default=False, nargs='?',
+    parser.add_argument('--no-labels', metavar='', const=True, default=False, nargs='?',
                    help='do not add labels to images. (string, default = false)')
 
     parser.add_argument('--imagesize', metavar='<integer>', type=int, nargs='?',default=250,
@@ -226,7 +226,7 @@ def read_options(options):
                    help='gzip cube files (default = false)')
 
     parser.add_argument('--national_scheme', const=True, default=False, nargs='?',
-                   help='use a soft red/blue color scheme. (string, default = false)')
+                   help='use a red/blue color scheme. (string, default = false)')
     parser.add_argument('--silver_scheme', const=True, default=False, nargs='?',
                    help='use a gray/white color scheme. (string, default = false)')
     parser.add_argument('--bright_scheme', const=True, default=False, nargs='?',
@@ -250,7 +250,7 @@ def read_options(options):
     options["OPACITY"][0] = str(args.opacity)
     options["SCALE"][0] = str(args.scale)
     options["LABEL_MOS"][0] = str(not args.no_labels)
-    options["MONTAGE"][0] = str(args.montage)
+    options["MONTAGE"][0] = str(not args.no_montage)
     options["FONTSIZE"][0] = str(args.fontsize)
     options["IMAGEW"][0] = str(args.imagew)
     options["IMAGEH"][0] = str(args.imageh)

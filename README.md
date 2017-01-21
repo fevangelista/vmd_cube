@@ -12,12 +12,12 @@ Alternatively the user can request one of the following color schemes (Emory is 
 >>> ./vmd_cube.py --help
 usage: vmd_cube.py [-h] [--color1 [<integer>]] [--color2 [<integer>]]
                    [--iso [<isovalue>]] [--rx [<angle>]] [--ry [<angle>]]
-                   [--rz [<angle>]] [--tx [<angle>]] [--ty [<angle>]]
-                   [--tz [<angle>]] [--opacity [<opacity>]]
-                   [--scale [<factor>]] [--montage [MONTAGE]]
-                   [--label_mos [LABEL_MOS]] [--imagesize [<integer>]]
-                   [--imagew [<integer>]] [--imageh [<integer>]]
-                   [--fontsize [<integer>]] [--interactive ] [--gzip ]
+                   [--rz [<angle>]] [--tx [<length>]] [--ty [<length>]]
+                   [--tz [<length>]] [--opacity [<opacity>]]
+                   [--scale [<factor>]] [--no-montage ] [--no-labels ]
+                   [--imagesize [<integer>]] [--imagew [<integer>]]
+                   [--imageh [<integer>]] [--fontsize [<integer>]]
+                   [--interactive ] [--gzip ]
                    [--national_scheme [NATIONAL_SCHEME]]
                    [--silver_scheme [SILVER_SCHEME]]
                    [--bright_scheme [BRIGHT_SCHEME]]
@@ -38,17 +38,15 @@ optional arguments:
   --rx [<angle>]        the x-axis rotation angle (float, default = 30.0)
   --ry [<angle>]        the y-axis rotation angle (float, default = 40.0)
   --rz [<angle>]        the z-axis rotation angle (float, default = 15.0)
-  --tx [<angle>]        the x-axis translation (float, default = 0.0)
-  --ty [<angle>]        the y-axis translation (float, default = 0.0)
-  --tz [<angle>]        the z-axis translation (float, default = 0.0)
+  --tx [<length>]       the x-axis translation (float, default = 0.0)
+  --ty [<length>]       the y-axis translation (float, default = 0.0)
+  --tz [<length>]       the z-axis translation (float, default = 0.0)
   --opacity [<opacity>]
                         opacity of the isosurface (float, default = 1.0)
   --scale [<factor>]    the scaling factor (float, default = 1.0)
-  --montage [MONTAGE]   call montage to combine images. (string, default =
+  --no-montage []       call montage to combine images. (string, default =
                         false)
-  --label_mos [LABEL_MOS]
-                        call montage to combine images. (string, default =
-                        false)
+  --no-labels []        do not add labels to images. (string, default = false)
   --imagesize [<integer>]
                         the size of each image (integer, default = 250)
   --imagew [<integer>]  the width of images (integer, default = 250)
@@ -58,8 +56,7 @@ optional arguments:
   --interactive []      run in interactive mode (default = false)
   --gzip []             gzip cube files (default = false)
   --national_scheme [NATIONAL_SCHEME]
-                        use a soft red/blue color scheme. (string, default =
-                        false)
+                        use a red/blue color scheme. (string, default = false)
   --silver_scheme [SILVER_SCHEME]
                         use a gray/white color scheme. (string, default =
                         false)

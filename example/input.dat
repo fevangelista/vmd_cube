@@ -1,0 +1,13 @@
+molecule water{
+O
+H 1 1.0
+H 1 1.0 2 104.5
+}
+
+set {
+    basis sto-3g
+}
+
+E, wfn = energy('hf', return_wfn=True)
+set cubeprop_tasks ['orbitals', 'density','basis_functions']
+cubeprop(wfn)

@@ -2,7 +2,7 @@
 
 # MIT License
 #
-# Copyright (c) 2017 Francesco Evangelista (Emory University)
+# Copyright (c) 2017 Francesco Evangelista
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -49,16 +49,6 @@ mol modcolor 0 PARAM_CUBENUM Element
 mol modstyle 0 PARAM_CUBENUM CPK 0.400000 0.40000 30.000000 16.000000
 
 # Define the material
-# material change ambient Opaque 0.310000
-# material change diffuse Opaque 0.720000
-# material change specular Opaque 0.500000
-# material change shininess Opaque 0.480000
-# material change opacity Opaque 1.000000
-# material change outline Opaque 0.000000
-# material change outlinewidth Opaque 0.000000
-# material change transmode Opaque 0.000000
-# material change specular Opaque 0.750000
-
 material change ambient   EdgyShiny 0.310000
 material change diffuse   EdgyShiny 0.720000
 material change shininess EdgyShiny 1.0000
@@ -217,8 +207,8 @@ def read_options(options):
                    help='the scaling factor (float, default = 1.0)')
     parser.add_argument('--montage', const=True, default=True, nargs='?',
                    help='call montage to combine images. (string, default = false)')
-    parser.add_argument('--label_mos', const=True, default=False, nargs='?',
-                   help='call montage to combine images. (string, default = false)')
+    parser.add_argument('--no-labels', const=True, default=False, nargs='?',
+                   help='do not add labels to images. (string, default = false)')
 
     parser.add_argument('--imagesize', metavar='<integer>', type=int, nargs='?',default=250,
                    help='the size of each image (integer, default = 250)')
@@ -259,7 +249,7 @@ def read_options(options):
     options["TZ"][0] = str(args.tz)
     options["OPACITY"][0] = str(args.opacity)
     options["SCALE"][0] = str(args.scale)
-    options["LABEL_MOS"][0] = str(args.label_mos)
+    options["LABEL_MOS"][0] = str(not args.no_labels)
     options["MONTAGE"][0] = str(args.montage)
     options["FONTSIZE"][0] = str(args.fontsize)
     options["IMAGEW"][0] = str(args.imagew)

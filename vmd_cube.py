@@ -46,9 +46,20 @@ vmd_template = """#
 # Load the molecule and change the atom style
 mol load cube PARAM_CUBEFILE.cube
 mol modcolor 0 PARAM_CUBENUM Element
-mol modstyle 0 PARAM_CUBENUM CPK 0.400000 0.40000 30.000000 16.000000
+mol modstyle 0 PARAM_CUBENUM Licorice 0.100000 10.000000 10.000000
+#mol modstyle 0 PARAM_CUBENUM CPK 0.400000 0.40000 30.000000 16.000000
 
 # Define the material
+material change ambient Opaque 0.310000
+material change diffuse Opaque 0.720000
+material change specular Opaque 0.500000
+material change shininess Opaque 0.480000
+material change opacity Opaque 1.000000
+material change outline Opaque 0.000000
+material change outlinewidth Opaque 0.000000
+material change transmode Opaque 0.000000
+material change specular Opaque 0.750000
+
 material change ambient   EdgyShiny 0.310000
 material change diffuse   EdgyShiny 0.720000
 material change shininess EdgyShiny 1.0000

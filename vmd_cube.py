@@ -46,7 +46,7 @@ vmd_template = """#
 # Load the molecule and change the atom style
 mol load cube PARAM_CUBEFILE.cube
 mol modcolor 0 PARAM_CUBENUM Element
-mol modstyle 0 PARAM_CUBENUM Licorice 0.100000 10.000000 10.000000
+mol modstyle 0 PARAM_CUBENUM Licorice 0.110000 10.000000 10.000000
 #mol modstyle 0 PARAM_CUBENUM CPK 0.400000 0.40000 30.000000 16.000000
 
 # Define the material

@@ -216,9 +216,9 @@ def read_options(options):
 
     parser.add_argument('--scale', metavar='<factor>', type=float, nargs='?',default=1.0,
                    help='the scaling factor (float, default = 1.0)')
-    parser.add_argument('--no-montage', metavar='', const=True, default=False, nargs='?',
+    parser.add_argument('--no-montage', action="store_true",
                    help='call montage to combine images. (string, default = false)')
-    parser.add_argument('--no-labels', metavar='', const=True, default=False, nargs='?',
+    parser.add_argument('--no-labels', action="store_true",
                    help='do not add labels to images. (string, default = false)')
 
     parser.add_argument('--imagesize', metavar='<integer>', type=int, nargs='?',default=250,
@@ -230,19 +230,19 @@ def read_options(options):
     parser.add_argument('--fontsize', metavar='<integer>', type=int, nargs='?',default=20,
                    help='the font size (integer, default = 20)')
 
-    parser.add_argument('--interactive', metavar='', const=True, default=False, nargs='?',
+    parser.add_argument('--interactive', action="store_true",
                    help='run in interactive mode (default = false)')
 
-    parser.add_argument('--gzip', metavar='', const=True, default=False, nargs='?',
+    parser.add_argument('--gzip', action="store_true",
                    help='gzip cube files (default = false)')
 
-    parser.add_argument('--national_scheme', const=True, default=False, nargs='?',
+    parser.add_argument('--national_scheme', action="store_true",
                    help='use a red/blue color scheme. (string, default = false)')
-    parser.add_argument('--silver_scheme', const=True, default=False, nargs='?',
+    parser.add_argument('--silver_scheme', action="store_true",
                    help='use a gray/white color scheme. (string, default = false)')
-    parser.add_argument('--bright_scheme', const=True, default=False, nargs='?',
+    parser.add_argument('--bright_scheme', action="store_true",
                    help='use a soft yellow/blue color scheme. (string, default = false)')
-    parser.add_argument('--electron_scheme', const=True, default=False, nargs='?',
+    parser.add_argument('--electron_scheme', action="store_true",
                    help='use a purple/green color scheme. (string, default = false)')
 
     args = parser.parse_args()

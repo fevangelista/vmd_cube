@@ -196,7 +196,7 @@ def read_options(options):
     parser.add_argument('--color2', metavar='<integer>', type=int, nargs='?',default=23,
                    help='the color ID of surface 2 (integer, default = 23)')
                    
-    parser.add_argument('--iso', metavar='<isovalue>', type=float, nargs='?',default=0.05,
+    parser.add_argument('--iso', metavar='<isovalue>', type=float, nargs='?',default=0.0,
                    help='the isosurface value (float, default = 0.05)')
                    
     parser.add_argument('--rx', metavar='<angle>', type=float, nargs='?',default=30.0,
@@ -334,8 +334,26 @@ def write_and_run_vmd_script(options,cube_files):
         replacement_map[key] = v[0]
 
     for n,f in enumerate(cube_files):
-        replacement_map["PARAM_CUBENUM"] = "%03d" % n
-        replacement_map["PARAM_CUBEFILE"] = options["CUBEDIR"][0] + "/" + f[:-5]
+        replacement_map["PARAM_CUBENUM"] = '%03d' % n
+        replacement_map["PARAM_CUBEFILE"] = options["CUBEDIR"][0] + '/' + f[:-5]
+
+        iso1 = "0.05"
+        iso2 = "-0.05"
+        if float(options["ISOVALUE1"][0]) != 0.0:
+            iso1 = options["ISOVALUE1"][0]
+            iso2 = options["ISOVALUE2"][0]
+        else:
+            with open(f,'r') as file:
+                l1 = file.readline()
+                l2 = file.readline()
+                m = re.search(r'density: \(([-+]?[0-9]*\.?[0-9]+)\,([-+]?[0-9]*\.?[0-9]+)\)',l2)
+                if m:
+                    iso1 = m.groups()[0]
+                    iso2 = m.groups()[1]
+
+        replacement_map["PARAM_ISOVALUE1"] = iso1
+        replacement_map["PARAM_ISOVALUE2"] = iso2
+        print("Plotting %s with isocontour values %s and %s" % (f,iso1,iso2))
 
         vmd_script_surface = multigsub(replacement_map,vmd_template_surface)
         vmd_script_head = multigsub(replacement_map,vmd_template)
@@ -417,6 +435,38 @@ def zip_files(cube_files,options):
         print("\nCompressing cube files")
         FNULL = open(os.devnull, 'w')
         subprocess.call(("gzip %s" % " ".join(cube_files)),stdout=FNULL, shell=True)
+
+
+def get_cumulative_density_iso_value(file,sigma):
+    """Find the isosurface values that capture a certain amount of the total density (sigma)."""
+    cube_data = []
+    norm = 0.0
+    k = 0
+    with open(file) as f:
+        for line in f:
+            if k > 6:
+                for s in line.split():
+                    value = float(s)
+                    value_sqr = value * value
+                    norm = norm + value_sqr
+                    cube_data.append((value_sqr,value))
+            k = k + 1
+
+    cube_data.sort(reverse=True)
+
+    sum = 0.0
+    positive_iso = 0.0
+    negative_iso = 0.0
+    for (value_sqr,value) in cube_data:
+        if sum < sigma:
+            sum = sum + value_sqr / norm
+            if value > 0:
+                positive_iso = value
+            else:
+                negative_iso = value
+        else:
+            return (positive_iso, negative_iso)
+    return (positive_iso, negative_iso)
 
 
 def main(argv):

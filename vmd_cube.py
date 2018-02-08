@@ -87,14 +87,9 @@ color Display Background white"""
 
 
 vmd_template_surface = """#
-# Add the surfaces
-mol color ColorID PARAM_SURF1ID
-mol representation Isosurface PARAM_ISOVALUE1 0 0 0 1 1
-mol selection all
-mol material EdgyShiny
-mol addrep PARAM_CUBENUM
-mol color ColorID PARAM_SURF2ID
-mol representation Isosurface PARAM_ISOVALUE2 0 0 0 1 1
+# Add a surface
+mol color ColorID PARAM_ISOCOLOR
+mol representation Isosurface PARAM_ISOVALUE 0 0 0 1 1
 mol selection all
 mol material EdgyShiny
 mol addrep PARAM_CUBENUM
@@ -120,10 +115,8 @@ light 0 rot x -30.0
 default_path = os.getcwd()
 
 # Default parameters
-options = {"SURF1ID"    : [None,"Surface1 Color Id"],
-           "SURF2ID"    : [None,"Surface2 Color Id"],
-           "ISOVALUE1"  : [None,"Isosurface1 Value"],
-           "ISOVALUE2"  : [None,"Isosurface2 Value"],
+options = {"ISOVALUE"   : [None,"Isosurface Value(s)"],
+           "ISOCOLOR"   : [None,"Isosurface Color(s)"],
            "RX"         : [None,"X-axis Rotation"],
            "RY"         : [None,"Y-axis Rotation"],
            "RZ"         : [None,"Z-axis Rotation"],
@@ -191,13 +184,10 @@ def read_options(options):
     parser.add_argument('data', metavar='<cubefile dir>', type=str, nargs='?',default=".",
                    help='The directory containing the cube files.')
                    
-    parser.add_argument('--color1', metavar='<integer>', type=int, nargs='?',default=3,
-                   help='the color ID of surface 1 (integer, default = 3)')
-    parser.add_argument('--color2', metavar='<integer>', type=int, nargs='?',default=23,
-                   help='the color ID of surface 2 (integer, default = 23)')
-                   
-    parser.add_argument('--iso', metavar='<isovalue>', type=float, nargs='?',default=0.0,
-                   help='the isosurface value (float, default = 0.05)')
+    parser.add_argument('--isovalue', metavar='<isovalue>', type=float, nargs='*',default=[0.05,-0.05],
+                   help='a list of isosurface values (a list of floats, default = [0.05,-0.05])')
+    parser.add_argument('--isocolor', metavar='<integer>', type=int, nargs='*',default=[3,23],
+                   help='a list of isosurface color IDs (a list of integers, default = [3,23])')
                    
     parser.add_argument('--rx', metavar='<angle>', type=float, nargs='?',default=30.0,
                    help='the x-axis rotation angle (float, default = 30.0)')
@@ -223,8 +213,6 @@ def read_options(options):
     parser.add_argument('--no-labels', action="store_true",
                    help='do not add labels to images. (string, default = false)')
 
-    parser.add_argument('--imagesize', metavar='<integer>', type=int, nargs='?',default=250,
-                   help='the size of each image (integer, default = 250)')
     parser.add_argument('--imagew', metavar='<integer>', type=int, nargs='?',default=250,
                    help='the width of images (integer, default = 250)')
     parser.add_argument('--imageh', metavar='<integer>', type=int, nargs='?',default=250,
@@ -250,10 +238,8 @@ def read_options(options):
     args = parser.parse_args()
 
     options["CUBEDIR"][0] = str(args.data)
-    options["SURF1ID"][0] = str(args.color1)
-    options["SURF2ID"][0] = str(args.color2)
-    options["ISOVALUE1"][0] = str(args.iso)
-    options["ISOVALUE2"][0] = str(-args.iso)
+    options["ISOVALUE"][0] = args.isovalue
+    options["ISOCOLOR"][0] = args.isocolor
     options["RX"][0] = str(args.rx)
     options["RY"][0] = str(args.ry)
     options["RZ"][0] = str(args.rz)
@@ -271,25 +257,21 @@ def read_options(options):
     options["GZIP"][0] = str(args.gzip)
 
     if args.national_scheme:
-        options["SURF1ID"][0] = '23'
-        options["SURF2ID"][0] = '30'
+        options["ISOCOLOR"][0] = [23,30]
 
     if args.silver_scheme:
-        options["SURF1ID"][0] = '2'
-        options["SURF2ID"][0] = '8'
+        options["ISOCOLOR"][0] = [2,8]
 
     if args.electron_scheme:
-        options["SURF1ID"][0] = '13'
-        options["SURF2ID"][0] = '12'
+        options["ISOCOLOR"][0] = [13,12]
 
     if args.bright_scheme:
-        options["SURF1ID"][0] = '32'
-        options["SURF2ID"][0] = '22'
+        options["ISOCOLOR"][0] = [32,22]
 
     print("Parameters:")
     sorted_parameters = sorted(options.keys())
     for k in sorted_parameters:
-        print("  %-20s %s" % (options[k][1],options[k][0]))
+        print("  %-20s %s" % (options[k][1],str(options[k][0])))
 
 def find_cubes(options):
     # Find all the cube files in a given directory
@@ -337,30 +319,34 @@ def write_and_run_vmd_script(options,cube_files):
         replacement_map["PARAM_CUBENUM"] = '%03d' % n
         replacement_map["PARAM_CUBEFILE"] = options["CUBEDIR"][0] + '/' + f[:-5]
 
-        # Default isocontour values
-        iso1 = '0.05'
-        iso2 = '-0.05'
-
+        # Default isocontour values or user-provided
+        isovalue = options["ISOVALUE"][0][:]
+        isocolor = options["ISOCOLOR"][0][:]
+        
         # Read isocontour values from file, if available
         with open(f,'r') as file:
             l1 = file.readline()
             l2 = file.readline()
             m = re.search(r'density: \(([-+]?[0-9]*\.?[0-9]+)\,([-+]?[0-9]*\.?[0-9]+)\)',l2)
             if m:
-                iso1 = m.groups()[0]
-                iso2 = m.groups()[1]
+                isovalue[0] = float(m.groups()[0])
+                isovalue[1] = float(m.groups()[1])
 
-        # User-provided isocontour values
-        if float(options["ISOVALUE1"][0]) != 0.0:
-            iso1 = options["ISOVALUE1"][0]
-        if float(options["ISOVALUE2"][0]) != 0.0:
-            iso2 = options["ISOVALUE2"][0]
+        nisovalue = len(isovalue)
+        nisocolor = len(isocolor)
+        if nisovalue!= nisocolor:
+            print("Quitting: Please specify the same number of isosurface values and colors.")
+            quit()
+        else:
+            print("Plotting %s with isosurface values" % (f), str(isovalue))
 
-        replacement_map["PARAM_ISOVALUE1"] = iso1
-        replacement_map["PARAM_ISOVALUE2"] = iso2
-        print("Plotting %s with isocontour values %s and %s" % (f,iso1,iso2))
+        vmd_script_surface = ""
+        surf = zip(isovalue,isocolor)
+        for c in surf:
+            replacement_map["PARAM_ISOVALUE"] = str(c[0])
+            replacement_map["PARAM_ISOCOLOR"] = str(c[1])
+            vmd_script_surface += multigsub(replacement_map,vmd_template_surface)
 
-        vmd_script_surface = multigsub(replacement_map,vmd_template_surface)
         vmd_script_head = multigsub(replacement_map,vmd_template)
         
         if options["INTERACTIVE"][0] == 'True':

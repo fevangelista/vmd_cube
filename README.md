@@ -24,6 +24,9 @@ vmd_cube can plot an arbitrary number of isosrufaces. This can be specified with
 For example, to draw three surfaces with values [0.03,0.04,0.05] call vmd_cube with the following argument `--isovalue 0.03 0.04 0.05 --isocolor 3 23 12`.
 Note that the number of arguments passed to `--isovalue` and `--isocolor` must be the same.
 
+![vmd_cube color schemes](/vmd_cube_multiple_surfaces.png?raw=true "Color Schemes")
+
+
 ## vmd_cube options
 ```
 >>> ./vmd_cube.py --help

@@ -9,7 +9,9 @@ Psi4 Gaussian Cube File.
 Property: Psi_a_1_1-Ag. Isocontour range for 85% of the density: (0.0535039,0)
 ```
 These isocountour values capture 85% of the probability density using the least amount of grid points.
-Alternatively, a symmetric isocontour range [-c,c] can be set with the `--iso=c` option.
+
+Alternatively, the isocontour range can be set with the `--iso` option. For example, `--iso 0.03 -0.03`.
+If vmd_cube is not provided isocountour values, it will use the default ([0.05,-0.05]).
 
 ## Color schemes
 The vmd_cube color scheme is customizable using the `--color1/--color2` options.
@@ -17,21 +19,23 @@ Alternatively the user can request one of the following color schemes (Emory is 
 
 ![vmd_cube color schemes](/vmd_cube_color_schemes.png?raw=true "Color Schemes")
 
+## Specifying arbitrary isosurface values/colors
+vmd_cube can plot an arbitrary number of isosrufaces. This can be specified with the options `--isovalue` and `--isocolor`.
+For example, to draw three surfaces with values [0.03,0.04,0.05] call vmd_cube with the following argument `--isovalue 0.03 0.04 0.05 --isocolor 3 23 12`.
+Note that the number of arguments passed to `--isovalue` and `--isocolor` must be the same.
+
 ## vmd_cube options
 ```
 >>> ./vmd_cube.py --help
-usage: vmd_cube.py [-h] [--color1 [<integer>]] [--color2 [<integer>]]
-                   [--iso [<isovalue>]] [--rx [<angle>]] [--ry [<angle>]]
-                   [--rz [<angle>]] [--tx [<length>]] [--ty [<length>]]
-                   [--tz [<length>]] [--opacity [<opacity>]]
-                   [--scale [<factor>]] [--no-montage ] [--no-labels ]
-                   [--imagesize [<integer>]] [--imagew [<integer>]]
-                   [--imageh [<integer>]] [--fontsize [<integer>]]
-                   [--interactive ] [--gzip ]
-                   [--national_scheme [NATIONAL_SCHEME]]
-                   [--silver_scheme [SILVER_SCHEME]]
-                   [--bright_scheme [BRIGHT_SCHEME]]
-                   [--electron_scheme [ELECTRON_SCHEME]]
+usage: vmd_cube.py [-h] [--isovalue [<isovalue> [<isovalue> ...]]]
+                   [--isocolor [<integer> [<integer> ...]]] [--rx [<angle>]]
+                   [--ry [<angle>]] [--rz [<angle>]] [--tx [<length>]]
+                   [--ty [<length>]] [--tz [<length>]] [--opacity [<opacity>]]
+                   [--scale [<factor>]] [--no-montage] [--no-labels]
+                   [--imagew [<integer>]] [--imageh [<integer>]]
+                   [--fontsize [<integer>]] [--interactive] [--gzip]
+                   [--national_scheme] [--silver_scheme] [--bright_scheme]
+                   [--electron_scheme]
                    [<cubefile dir>]
 
 vmd_cube is a script to render cube files with vmd. To generate cube files
@@ -42,9 +46,12 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --color1 [<integer>]  the color ID of surface 1 (integer, default = 3)
-  --color2 [<integer>]  the color ID of surface 2 (integer, default = 23)
-  --iso [<isovalue>]    the isosurface value (float, default = 0.05)
+  --isovalue [<isovalue> [<isovalue> ...]]
+                        a list of isosurface values (a list of floats, default
+                        = [0.05,-0.05])
+  --isocolor [<integer> [<integer> ...]]
+                        a list of isosurface color IDs (a list of integers,
+                        default = [3,23])
   --rx [<angle>]        the x-axis rotation angle (float, default = 30.0)
   --ry [<angle>]        the y-axis rotation angle (float, default = 40.0)
   --rz [<angle>]        the z-axis rotation angle (float, default = 15.0)
@@ -54,26 +61,20 @@ optional arguments:
   --opacity [<opacity>]
                         opacity of the isosurface (float, default = 1.0)
   --scale [<factor>]    the scaling factor (float, default = 1.0)
-  --no-montage []       call montage to combine images. (string, default =
+  --no-montage          call montage to combine images. (string, default =
                         false)
-  --no-labels []        do not add labels to images. (string, default = false)
-  --imagesize [<integer>]
-                        the size of each image (integer, default = 250)
+  --no-labels           do not add labels to images. (string, default = false)
   --imagew [<integer>]  the width of images (integer, default = 250)
   --imageh [<integer>]  the height of images (integer, default = 250)
   --fontsize [<integer>]
                         the font size (integer, default = 20)
-  --interactive []      run in interactive mode (default = false)
-  --gzip []             gzip cube files (default = false)
-  --national_scheme [NATIONAL_SCHEME]
-                        use a red/blue color scheme. (string, default = false)
-  --silver_scheme [SILVER_SCHEME]
-                        use a gray/white color scheme. (string, default =
+  --interactive         run in interactive mode (default = false)
+  --gzip                gzip cube files (default = false)
+  --national_scheme     use a red/blue color scheme. (string, default = false)
+  --silver_scheme       use a gray/white color scheme. (string, default =
                         false)
-  --bright_scheme [BRIGHT_SCHEME]
-                        use a soft yellow/blue color scheme. (string, default
+  --bright_scheme       use a soft yellow/blue color scheme. (string, default
                         = false)
-  --electron_scheme [ELECTRON_SCHEME]
-                        use a purple/green color scheme. (string, default =
+  --electron_scheme     use a purple/green color scheme. (string, default =
                         false)
 ```

@@ -337,19 +337,24 @@ def write_and_run_vmd_script(options,cube_files):
         replacement_map["PARAM_CUBENUM"] = '%03d' % n
         replacement_map["PARAM_CUBEFILE"] = options["CUBEDIR"][0] + '/' + f[:-5]
 
-        iso1 = "0.05"
-        iso2 = "-0.05"
+        # Default isocontour values
+        iso1 = '0.05'
+        iso2 = '-0.05'
+
+        # Read isocontour values from file, if available
+        with open(f,'r') as file:
+            l1 = file.readline()
+            l2 = file.readline()
+            m = re.search(r'density: \(([-+]?[0-9]*\.?[0-9]+)\,([-+]?[0-9]*\.?[0-9]+)\)',l2)
+            if m:
+                iso1 = m.groups()[0]
+                iso2 = m.groups()[1]
+
+        # User-provided isocontour values
         if float(options["ISOVALUE1"][0]) != 0.0:
             iso1 = options["ISOVALUE1"][0]
+        if float(options["ISOVALUE2"][0]) != 0.0:
             iso2 = options["ISOVALUE2"][0]
-        else:
-            with open(f,'r') as file:
-                l1 = file.readline()
-                l2 = file.readline()
-                m = re.search(r'density: \(([-+]?[0-9]*\.?[0-9]+)\,([-+]?[0-9]*\.?[0-9]+)\)',l2)
-                if m:
-                    iso1 = m.groups()[0]
-                    iso2 = m.groups()[1]
 
         replacement_map["PARAM_ISOVALUE1"] = iso1
         replacement_map["PARAM_ISOVALUE2"] = iso2

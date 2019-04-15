@@ -33,6 +33,7 @@ import datetime
 
 from os import listdir, environ
 from os.path import isfile, join
+from future.utils import iteritems
 
 vmd_cube_help = """vmd_cube is a script to render cube files with vmd.
 To generate cube files with Psi4 add the command cubeprop() at the end of your input file."""
@@ -311,7 +312,7 @@ def write_and_run_vmd_script(options,cube_files):
 
     # Define a map that contains all the values of the VMD parameters
     replacement_map = {}
-    for k,v in options.iteritems():
+    for (k, v) in iteritems(options):
         key = "PARAM_" + k.upper()
         replacement_map[key] = v[0]
 

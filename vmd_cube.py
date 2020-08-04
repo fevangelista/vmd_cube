@@ -116,25 +116,26 @@ light 0 rot x -30.0
 default_path = os.getcwd()
 
 # Default parameters
-options = {"ISOVALUE"   : [None,"Isosurface Value(s)"],
-           "ISOCOLOR"   : [None,"Isosurface Color(s)"],
-           "RX"         : [None,"X-axis Rotation"],
-           "RY"         : [None,"Y-axis Rotation"],
-           "RZ"         : [None,"Z-axis Rotation"],
-           "TX"         : [None,"X-axis Translation"],
-           "TY"         : [None,"Y-axis Translation"],
-           "TZ"         : [None,"Z-axis Translation"],
-           "OPACITY"    : [None,"Opacity"],
-           "CUBEDIR"    : [None,"Cubefile Directory"],
-           "SCALE"      : [None,"Scaling Factor"],
-           "MONTAGE"    : [None,"Montage"],
-           "LABEL_MOS"  : [None,"Label MOs"],
-           "FONTSIZE"   : [None,"Font size"],
-           "IMAGEW"     : [None,"Image width"],
-           "IMAGEH"     : [None,"Image height"],
-           "VMDPATH"    : [None,"VMD Path"],
-           "INTERACTIVE": [None,"Interactive Mode"],
-           "GZIP"       : [None,"Gzip Cube Files"]}
+options = {"ISOVALUE"     : [None,"Isosurface Value(s)"],
+           "ISOCOLOR"     : [None,"Isosurface Color(s)"],
+           "ISOCUT"       : [None,"Isosurface Value Cutoff"],
+           "RX"           : [None,"X-axis Rotation"],
+           "RY"           : [None,"Y-axis Rotation"],
+           "RZ"           : [None,"Z-axis Rotation"],
+           "TX"           : [None,"X-axis Translation"],
+           "TY"           : [None,"Y-axis Translation"],
+           "TZ"           : [None,"Z-axis Translation"],
+           "OPACITY"      : [None,"Opacity"],
+           "CUBEDIR"      : [None,"Cubefile Directory"],
+           "SCALE"        : [None,"Scaling Factor"],
+           "MONTAGE"      : [None,"Montage"],
+           "LABEL_MOS"    : [None,"Label MOs"],
+           "FONTSIZE"     : [None,"Font size"],
+           "IMAGEW"       : [None,"Image width"],
+           "IMAGEH"       : [None,"Image height"],
+           "VMDPATH"      : [None,"VMD Path"],
+           "INTERACTIVE"  : [None,"Interactive Mode"],
+           "GZIP"         : [None,"Gzip Cube Files"]}
 
 
 def which(program):
@@ -189,6 +190,8 @@ def read_options(options):
                    help='a list of isosurface values (a list of floats, default = [0.05,-0.05])')
     parser.add_argument('--isocolor', metavar='<integer>', type=int, nargs='*',default=[3,23],
                    help='a list of isosurface color IDs (a list of integers, default = [3,23])')
+    parser.add_argument('--isocut', metavar='<isovalue cutoff>', type=float, nargs='?',default=1.0e-5,
+                   help='cutoff value for rendering an isosurface (float, default = 1.0e-5)')
                    
     parser.add_argument('--rx', metavar='<angle>', type=float, nargs='?',default=30.0,
                    help='the x-axis rotation angle (float, default = 30.0)')
@@ -241,6 +244,7 @@ def read_options(options):
     options["CUBEDIR"][0] = str(args.data)
     options["ISOVALUE"][0] = args.isovalue
     options["ISOCOLOR"][0] = args.isocolor
+    options["ISOCUT"][0] = str(args.isocut)
     options["RX"][0] = str(args.rx)
     options["RY"][0] = str(args.ry)
     options["RZ"][0] = str(args.rz)
@@ -344,11 +348,12 @@ def write_and_run_vmd_script(options,cube_files):
         vmd_script_surface = ""
         surf = zip(isovalue,isocolor)
         for c in surf:
-            if abs(c[0]) > 1.0e-6:
+            if abs(c[0]) > float(options["ISOCUT"][0]):
                 replacement_map["PARAM_ISOVALUE"] = str(c[0])
                 replacement_map["PARAM_ISOCOLOR"] = str(c[1])
                 vmd_script_surface += multigsub(replacement_map,vmd_template_surface)
-
+            else:
+                print(" * Skipping isosurface with isocontour value %f" % c[0])
         vmd_script_head = multigsub(replacement_map,vmd_template)
         
         if options["INTERACTIVE"][0] == 'True':

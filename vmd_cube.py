@@ -344,9 +344,10 @@ def write_and_run_vmd_script(options,cube_files):
         vmd_script_surface = ""
         surf = zip(isovalue,isocolor)
         for c in surf:
-            replacement_map["PARAM_ISOVALUE"] = str(c[0])
-            replacement_map["PARAM_ISOCOLOR"] = str(c[1])
-            vmd_script_surface += multigsub(replacement_map,vmd_template_surface)
+            if abs(c[0]) > 1.0e-6:
+                replacement_map["PARAM_ISOVALUE"] = str(c[0])
+                replacement_map["PARAM_ISOCOLOR"] = str(c[1])
+                vmd_script_surface += multigsub(replacement_map,vmd_template_surface)
 
         vmd_script_head = multigsub(replacement_map,vmd_template)
         

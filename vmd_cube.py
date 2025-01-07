@@ -22,8 +22,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import print_function
-
 import argparse
 import sys
 import re
@@ -33,7 +31,6 @@ import datetime
 
 from os import listdir, environ
 from os.path import isfile, join
-from future.utils import iteritems
 
 vmd_cube_help = """vmd_cube is a script to render cube files with vmd.
 To generate cube files with Psi4 add the command cubeprop() at the end of your input file."""
@@ -103,7 +100,7 @@ mol off PARAM_CUBENUM
 
 vmd_template_render = """
 # Render
-render TachyonInternal PARAM_CUBEFILE.tga
+render TachyonInternal PARAM_TGAFILE.tga
 mol delete PARAM_CUBENUM
 """
 
@@ -316,13 +313,18 @@ def write_and_run_vmd_script(options,cube_files):
 
     # Define a map that contains all the values of the VMD parameters
     replacement_map = {}
-    for (k, v) in iteritems(options):
+    for (k, v) in options.items():
         key = "PARAM_" + k.upper()
         replacement_map[key] = v[0]
 
     for n,f in enumerate(cube_files):
         replacement_map["PARAM_CUBENUM"] = '%03d' % n
         replacement_map["PARAM_CUBEFILE"] = options["CUBEDIR"][0] + '/' + f[:-5]
+        replacement_map["PARAM_TGAFILE"] = replacement_map["PARAM_CUBEFILE"]                
+        parts = replacement_map["PARAM_CUBEFILE"].split('_')
+        if parts[0] == './Psi':
+            pretty = f'{parts[0]}_{parts[1]}_{int(parts[2]):04d}_{parts[3]}'
+            replacement_map["PARAM_TGAFILE"] = pretty
 
         # Default isocontour values or user-provided
         isovalue = options["ISOVALUE"][0][:]

@@ -132,7 +132,8 @@ options = {"ISOVALUE"     : [None,"Isosurface Value(s)"],
            "IMAGEH"       : [None,"Image height"],
            "VMDPATH"      : [None,"VMD Path"],
            "INTERACTIVE"  : [None,"Interactive Mode"],
-           "GZIP"         : [None,"Gzip Cube Files"]}
+           "GZIP"         : [None,"Gzip Cube Files"],
+           "SIGMA"        : [None,"Amount of the total density captured by isocontour"]}
 
 
 def which(program):
@@ -235,6 +236,8 @@ def read_options(options):
                    help='use a soft yellow/blue color scheme. (string, default = false)')
     parser.add_argument('--electron_scheme', action="store_true",
                    help='use a purple/green color scheme. (string, default = false)')
+    parser.add_argument('--sigma', metavar='<float>', type=float, nargs='?',default=0.85,
+                   help='the amount of the total density captured by isocontour (float, default = 0.85)')
 
     args = parser.parse_args()
 
@@ -257,6 +260,7 @@ def read_options(options):
     options["IMAGEH"][0] = str(args.imageh)
     options["INTERACTIVE"][0] = str(args.interactive)
     options["GZIP"][0] = str(args.gzip)
+    options["SIGMA"][0] = str(args.sigma)
 
     if args.national_scheme:
         options["ISOCOLOR"][0] = [23,30]
@@ -338,6 +342,8 @@ def write_and_run_vmd_script(options,cube_files):
             if m:
                 isovalue[0] = float(m.groups()[0])
                 isovalue[1] = float(m.groups()[1])
+            else:
+                isovalue = get_cumulative_density_iso_value(f,float(options["SIGMA"][0]))
 
         nisovalue = len(isovalue)
         nisocolor = len(isocolor)
